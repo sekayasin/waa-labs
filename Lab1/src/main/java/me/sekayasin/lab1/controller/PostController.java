@@ -1,6 +1,7 @@
 package me.sekayasin.lab1.controller;
 
 import me.sekayasin.lab1.domain.Post;
+import me.sekayasin.lab1.domain.PostV2;
 import me.sekayasin.lab1.domain.dto.Content;
 import me.sekayasin.lab1.domain.dto.ContentDto;
 import me.sekayasin.lab1.domain.dto.PostDto;
@@ -31,10 +32,21 @@ public class PostController {
         return postService.findAll();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(headers = "API-VERSION=1.1")
+    public List<PostV2> getAllV2() {
+        return postService.findAllV2();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PostDto> getById(@PathVariable long id) {
         return ResponseEntity.ok(postService.findById(id));
     }
+
+//    @GetMapping
+//    public List<Post> getByAuthor(@RequestParam(value = "filter", required = false) String author){
+//        return postService.findByAuthor(author);
+//    }
 
     @GetMapping("/{id}/content")
     public ResponseEntity<Content> getContentByPostId(@PathVariable long id) {
@@ -52,6 +64,8 @@ public class PostController {
     public void delete(@PathVariable long id) {
         postService.delete(id);
     }
+
+
 
 
 }
