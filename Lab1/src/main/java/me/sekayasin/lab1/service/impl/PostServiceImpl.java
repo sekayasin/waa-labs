@@ -1,10 +1,10 @@
 package me.sekayasin.lab1.service.impl;
 
 import me.sekayasin.lab1.domain.Post;
-import me.sekayasin.lab1.domain.PostV2;
 import me.sekayasin.lab1.domain.dto.Content;
 import me.sekayasin.lab1.domain.dto.ContentDto;
 import me.sekayasin.lab1.domain.dto.PostDto;
+import me.sekayasin.lab1.domain.dto.PostResponseDto;
 import me.sekayasin.lab1.repo.PostRepo;
 import me.sekayasin.lab1.service.PostService;
 import me.sekayasin.lab1.util.ListMapper;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
 
     @Autowired
-    ListMapper<Post, PostDto> listMapperPostToDto;
+    ListMapper<Post, PostResponseDto> listMapperPostToDto;
 
     @Autowired
     ModelMapper modelMapper;
@@ -28,28 +28,26 @@ public class PostServiceImpl implements PostService {
     PostRepo postRepo;
 
     @Override
-    public List<PostDto> findAll() {
-        return (List<PostDto>) listMapperPostToDto.mapList(postRepo.findAll(), new PostDto());
+    public List<PostResponseDto> findAll() {
+        return (List<PostResponseDto>) listMapperPostToDto.mapList(postRepo.findAll(), new PostResponseDto());
+    }
 
-//        return postRepo.findAll()
-//                .stream()
-//                .map(post -> modelMapper.map(post, PostDto.class))
-//                .collect(Collectors.toList());
+//    @Override
+//    public List<PostV2> findAllV2() {
+//        return postRepo.findAllV2();
+//    }
+
+    @Override
+    public List<PostResponseDto> findByAuthor(String author) {
+        return findAll()
+                .stream()
+                .filter(postResponseDto -> postResponseDto.getAuthor().equals(author))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<PostV2> findAllV2() {
-        return postRepo.findAllV2();
-    }
-
-    @Override
-    public List<Post> findByAuthor(String author) {
-        return postRepo.findByAuthor(author);
-    }
-
-    @Override
-    public PostDto findById(long id) {
-        return modelMapper.map(postRepo.findById(id), PostDto.class);
+    public PostResponseDto findById(long id) {
+        return modelMapper.map(postRepo.getById(id), PostResponseDto.class);
     }
 
     @Override
@@ -59,16 +57,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void update(long id, ContentDto contentDto) {
-        postRepo.update(id, modelMapper.map(contentDto, Post.class));
+        Post postToUpdate = postRepo.getById(id);
+        postToUpdate.setTitle(contentDto.getTitle());
+        postToUpdate.setContent(contentDto.getContent());
+        postRepo.save(postToUpdate);
     }
 
     @Override
     public void delete(long id) {
-        postRepo.delete(id);
+        postRepo.deleteById(id);
     }
 
     @Override
     public Content getContentByPostId(long id) {
-        return modelMapper.map(postRepo.findById(id), Content.class);
+        return modelMapper.map(postRepo.getById(id), Content.class);
     }
 }

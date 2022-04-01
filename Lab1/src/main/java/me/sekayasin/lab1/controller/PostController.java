@@ -1,10 +1,9 @@
 package me.sekayasin.lab1.controller;
 
-import me.sekayasin.lab1.domain.Post;
-import me.sekayasin.lab1.domain.PostV2;
 import me.sekayasin.lab1.domain.dto.Content;
 import me.sekayasin.lab1.domain.dto.ContentDto;
 import me.sekayasin.lab1.domain.dto.PostDto;
+import me.sekayasin.lab1.domain.dto.PostResponseDto;
 import me.sekayasin.lab1.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,25 +27,25 @@ public class PostController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    public List<PostDto> getAll() {
+    public List<PostResponseDto> getAll() {
         return postService.findAll();
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(headers = "API-VERSION=1.1")
-    public List<PostV2> getAllV2() {
-        return postService.findAllV2();
-    }
+//    @ResponseStatus(HttpStatus.OK)
+//    @GetMapping(headers = "API-VERSION=1.1")
+//    public List<PostV2> getAllV2() {
+//        return postService.findAllV2();
+//    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getById(@PathVariable long id) {
+    public ResponseEntity<PostResponseDto> getById(@PathVariable long id) {
         return ResponseEntity.ok(postService.findById(id));
     }
 
-//    @GetMapping
-//    public List<Post> getByAuthor(@RequestParam(value = "filter", required = false) String author){
-//        return postService.findByAuthor(author);
-//    }
+    @GetMapping("/filter")
+    public List<PostResponseDto> getByAuthor(@RequestParam(required = false) String author){
+        return postService.findByAuthor(author);
+    }
 
     @GetMapping("/{id}/content")
     public ResponseEntity<Content> getContentByPostId(@PathVariable long id) {

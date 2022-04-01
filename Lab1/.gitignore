@@ -6,6 +6,7 @@ target/
 .mvn
 mvnw
 mvnw.cmd
+.jpb
 
 ### STS ###
 .apt_generated
@@ -34,3 +35,4 @@ build/
 
 ### VS Code ###
 .vscode/
+*.DS_Store
