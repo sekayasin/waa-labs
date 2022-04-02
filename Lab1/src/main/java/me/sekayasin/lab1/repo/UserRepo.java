@@ -1,12 +1,8 @@
 package me.sekayasin.lab1.repo;
 
-import me.sekayasin.lab1.domain.Post;
 import me.sekayasin.lab1.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {

@@ -1,10 +1,8 @@
 package me.sekayasin.lab1.service;
 
+import me.sekayasin.lab1.domain.Comment;
 import me.sekayasin.lab1.domain.Post;
-import me.sekayasin.lab1.domain.dto.Content;
-import me.sekayasin.lab1.domain.dto.ContentDto;
-import me.sekayasin.lab1.domain.dto.PostDto;
-import me.sekayasin.lab1.domain.dto.PostResponseDto;
+import me.sekayasin.lab1.domain.dto.*;
 
 import java.util.List;
 
@@ -24,4 +22,10 @@ public interface PostService {
     void delete(long id);
 
     Content getContentByPostId(long id);
+
+    List<Comment> getCommentsByPostId(long id);
+
+    void addCommentByPostId(long id, CommentDto commentDto);
+
+    List<PostResponseDto> findPostsByTitle(String titleKeyWord);
 }
