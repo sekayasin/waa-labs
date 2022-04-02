@@ -1,10 +1,8 @@
 package me.sekayasin.lab1.service.impl;
 
+import me.sekayasin.lab1.domain.Comment;
 import me.sekayasin.lab1.domain.Post;
-import me.sekayasin.lab1.domain.dto.Content;
-import me.sekayasin.lab1.domain.dto.ContentDto;
-import me.sekayasin.lab1.domain.dto.PostDto;
-import me.sekayasin.lab1.domain.dto.PostResponseDto;
+import me.sekayasin.lab1.domain.dto.*;
 import me.sekayasin.lab1.repo.PostRepo;
 import me.sekayasin.lab1.service.PostService;
 import me.sekayasin.lab1.util.ListMapper;
@@ -18,14 +16,16 @@ import java.util.stream.Collectors;
 @Service
 public class PostServiceImpl implements PostService {
 
-    @Autowired
-    ListMapper<Post, PostResponseDto> listMapperPostToDto;
+    private final ListMapper<Post, PostResponseDto> listMapperPostToDto;
+    private final ModelMapper modelMapper;
+    private final PostRepo postRepo;
 
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    PostRepo postRepo;
+    public PostServiceImpl(ListMapper<Post, PostResponseDto> listMapperPostToDto, ModelMapper modelMapper, PostRepo postRepo) {
+        this.listMapperPostToDto = listMapperPostToDto;
+        this.modelMapper = modelMapper;
+        this.postRepo = postRepo;
+    }
 
     @Override
     public List<PostResponseDto> findAll() {
@@ -47,6 +47,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponseDto findById(long id) {
+        if (!postRepo.existsById(id))
+            throw new IllegalStateException("Post with Id " + id + " does not exist");
         return modelMapper.map(postRepo.getById(id), PostResponseDto.class);
     }
 
@@ -57,6 +59,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void update(long id, ContentDto contentDto) {
+        if (!postRepo.existsById(id))
+            throw new IllegalStateException("Post with Id " + id + " does not exist");
         Post postToUpdate = postRepo.getById(id);
         postToUpdate.setTitle(contentDto.getTitle());
         postToUpdate.setContent(contentDto.getContent());
@@ -70,6 +74,30 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Content getContentByPostId(long id) {
+        if (!postRepo.existsById(id))
+            throw new IllegalStateException("Post with Id " + id + " does not exist");
         return modelMapper.map(postRepo.getById(id), Content.class);
+    }
+
+    @Override
+    public List<Comment> getCommentsByPostId(long id) {
+        if (!postRepo.existsById(id))
+            throw new IllegalStateException("Post with Id " + id + " does not exist");
+        return postRepo.getById(id).getComments();
+    }
+
+    @Override
+    public void addCommentByPostId(long id, CommentDto commentDto) {
+        if (!postRepo.existsById(id))
+            throw new IllegalStateException("Post with Id " + id + " does not exist");
+        Post postToAddComment = postRepo.getById(id);
+        Comment newComment = modelMapper.map(commentDto, Comment.class);
+        postToAddComment.getComments().add(newComment);
+        postRepo.save(postToAddComment);
+    }
+
+    @Override
+    public List<PostResponseDto> findPostsByTitle(String titleKeyWord) {
+        return (List<PostResponseDto>) listMapperPostToDto.mapList(postRepo.findPostsByTitle(titleKeyWord), new PostResponseDto());
     }
 }
