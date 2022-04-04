@@ -1,5 +1,6 @@
 package me.sekayasin.lab1.controller;
 
+import me.sekayasin.lab1.aspect.annotations.ExecutionTime;
 import me.sekayasin.lab1.domain.Comment;
 import me.sekayasin.lab1.domain.dto.*;
 import me.sekayasin.lab1.service.UserService;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@CrossOrigin(origins = {"http://localhost:3000"})
 public class UserController {
 
     private final UserService userService;
@@ -25,8 +27,9 @@ public class UserController {
     public List<UserDto> findAll() {
         return userService.findAll();
     }
-
+    
     @ResponseStatus(HttpStatus.OK)
+    @ExecutionTime
     @GetMapping("/{id}")
     public UserDto findById(@PathVariable Long id) {
         return userService.findById(id);
@@ -60,6 +63,12 @@ public class UserController {
     @GetMapping("/filter")
     public List<UserDto> findAllUsersWithMoreThanNPosts(@RequestParam(name = "posts", required = false) int numberOfPosts) {
         return userService.findAllUsersWithMoreThanNPosts(numberOfPosts);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/filters")
+    public List<UserDto> findUsersByPostTitle(@RequestParam(name = "title", required = false) String title) {
+        return userService.findUsersByPostTitle(title);
     }
 
     @ResponseStatus(HttpStatus.OK)

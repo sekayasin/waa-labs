@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config" status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{EE MMM dd HH:mm:ss z yyyy} %msg%n" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="warn">
+            <AppenderRef ref="Console" />
+        </Root>
+<!--        <Logger name="org.springframework" level="warn">-->
+<!--            <AppenderRef ref="Console" />-->
+<!--        </Logger>-->
+    </Loggers>
+</Configuration>
