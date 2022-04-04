@@ -6,6 +6,7 @@ import me.sekayasin.lab1.domain.User;
 import me.sekayasin.lab1.domain.dto.*;
 import me.sekayasin.lab1.repo.UserRepo;
 import me.sekayasin.lab1.service.UserService;
+import me.sekayasin.lab1.util.ListMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
+    private final ListMapper<User, UserDto> listMapperUserDto;
 
     @Autowired
-    public UserServiceImpl(UserRepo userRepo, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepo userRepo, ModelMapper modelMapper, ListMapper<User, UserDto> listMapperUserDto) {
         this.userRepo = userRepo;
         this.modelMapper = modelMapper;
+        this.listMapperUserDto = listMapperUserDto;
     }
 
     @Override
@@ -75,11 +78,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAllUsersWithMoreThanNPosts(int numberOfPosts) {
-        return userRepo.findAll()
-                .stream()
-                .filter(user -> user.getPosts().size() > numberOfPosts)
-                .map(user -> modelMapper.map(user, UserDto.class))
-                .collect(Collectors.toList());
+        return (List<UserDto>) listMapperUserDto.mapList(userRepo.findAllUsersWithMoreThanNPosts(numberOfPosts), new UserDto());
+
+//        return userRepo.findAll()
+//                .stream()
+//                .filter(user -> user.getPosts().size() > numberOfPosts)
+//                .map(user -> modelMapper.map(user, UserDto.class))
+//                .collect(Collectors.toList());
     }
 
     @Override
@@ -115,5 +120,10 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> findUsersByPostTitle(String title) {
+        return (List<UserDto>) listMapperUserDto.mapList(userRepo.findUsersByPostTitle(title), new UserDto());
     }
 }

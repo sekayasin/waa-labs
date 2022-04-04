@@ -23,4 +23,6 @@ public interface UserService {
     CommentDto getUserCommentOnPostById(long userId, long postId, long commentId);
 
     List<Comment> getUserCommentsOnPost(long userId, long postId);
+
+    List<UserDto> findUsersByPostTitle(String title);
 }
