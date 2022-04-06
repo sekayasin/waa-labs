@@ -1,13 +1,13 @@
 -- USERS
 
-INSERT INTO users (id, name)
-VALUES (301, 'jonah');
+INSERT INTO users (id, firstname, lastname, password, username)
+VALUES (301, 'Jonah', 'Codd', 'pass123', 'jonah');
 
-INSERT INTO users (id, name)
-VALUES (302, 'josh');
+INSERT INTO users (id, firstname, lastname, password, username)
+VALUES (302, 'Josh', 'Khan', 'pass123', 'josh');
 
-INSERT INTO users (id, name)
-VALUES (303, 'kelsey');
+INSERT INTO users (id, firstname, lastname, password, username)
+VALUES (303, 'Kelsey', 'Tower', 'pass123', 'kelsey');
 
 -- POST
 

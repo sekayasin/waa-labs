@@ -18,6 +18,8 @@ spring:
   sql:
     init:
       mode: always
+jwt:
+  secret: 'My5ecr3tT0k3N^[a-zA-Z0-9._]^+$MyR@nd0m5tr1ng25ecur3MyT0k3ns0D0ntCr@ck1t'
 server:
   error:
     include-message: always
