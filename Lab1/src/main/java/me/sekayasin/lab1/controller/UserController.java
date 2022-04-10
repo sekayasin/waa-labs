@@ -1,5 +1,6 @@
 package me.sekayasin.lab1.controller;
 
+import jdk.jshell.Snippet;
 import me.sekayasin.lab1.aspect.annotations.ExecutionTime;
 import me.sekayasin.lab1.domain.Comment;
 import me.sekayasin.lab1.domain.dto.*;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -80,6 +84,12 @@ public class UserController {
     @GetMapping("/{userId}/posts/{postId}/comments")
     public List<Comment> getUserCommentsOnPost(@PathVariable long userId, @PathVariable long postId){
         return userService.getUserCommentsOnPost(userId, postId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/token/refresh")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        userService.refreshToken(request, response);
     }
 
 }
