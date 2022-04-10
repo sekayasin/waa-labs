@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostV2 {
-    long id;
+    Long id;
     String title;
     String content;
     String author;

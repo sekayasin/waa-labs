@@ -1,6 +1,7 @@
 package me.sekayasin.lab1.service;
 
 import me.sekayasin.lab1.domain.Comment;
+import me.sekayasin.lab1.domain.Role;
 import me.sekayasin.lab1.domain.dto.*;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface UserService {
     List<Comment> getUserCommentsOnPost(long userId, long postId);
 
     List<UserDto> findUsersByPostTitle(String title);
+
+    Role saveRole(Role role);
+
+    void addRoleToUser(String username, String roleName);
 }

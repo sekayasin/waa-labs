@@ -1,32 +1,54 @@
 package me.sekayasin.lab1.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.sekayasin.lab1.domain.Comment;
 import me.sekayasin.lab1.domain.Post;
+import me.sekayasin.lab1.domain.Role;
 import me.sekayasin.lab1.domain.User;
 import me.sekayasin.lab1.domain.dto.*;
+import me.sekayasin.lab1.repo.RoleRepo;
 import me.sekayasin.lab1.repo.UserRepo;
 import me.sekayasin.lab1.service.UserService;
 import me.sekayasin.lab1.util.ListMapper;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService {
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepo userRepo;
     private final ModelMapper modelMapper;
     private final ListMapper<User, UserDto> listMapperUserDto;
+    private final RoleRepo roleRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserRepo userRepo, ModelMapper modelMapper, ListMapper<User, UserDto> listMapperUserDto) {
-        this.userRepo = userRepo;
-        this.modelMapper = modelMapper;
-        this.listMapperUserDto = listMapperUserDto;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+      User myUser = userRepo.findByUsername(username);
+      if (myUser == null) {
+          log.error("User not found in the database");
+      } else {
+          log.info("User found in the database: {}", username);
+      }
+      Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+      myUser.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
+
+      return new org.springframework.security.core.userdetails.User(myUser.getUsername(), myUser.getPassword(), authorities);
     }
 
     @Override
@@ -46,6 +68,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(UserNameDto user) {
+        if (userRepo.findByUsername(user.getUsername()) != null)
+            throw new IllegalStateException("Username: " + user.getUsername() + " exists");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(modelMapper.map(user, User.class));
     }
 
@@ -125,5 +150,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> findUsersByPostTitle(String title) {
         return (List<UserDto>) listMapperUserDto.mapList(userRepo.findUsersByPostTitle(title), new UserDto());
+    }
+
+    @Override
+    public Role saveRole(Role role) {
+        return roleRepo.save(role);
+    }
+
+    @Override
+    public void addRoleToUser(String username, String roleName) {
+        User user = userRepo.findByUsername(username);
+        Role role = roleRepo.findByName(roleName);
+        user.getRoles().add(role);
     }
 }
